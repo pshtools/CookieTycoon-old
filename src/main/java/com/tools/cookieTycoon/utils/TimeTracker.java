@@ -115,7 +115,7 @@ public void start() {
         }
     }
 
-    private void saveData() {
+    public void saveData() {
         try (Writer writer = new FileWriter(dataFile)) {
             gson.toJson(playTimeData, writer);
         } catch (IOException e) {
