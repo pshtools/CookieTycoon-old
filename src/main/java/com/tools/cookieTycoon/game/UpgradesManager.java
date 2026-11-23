@@ -7,6 +7,9 @@ import com.tools.cookieTycoon.utils.NumberFormatter;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import java.util.*;
 
@@ -35,7 +38,7 @@ public class UpgradesManager {
 
     private CookieTycoon plugin;
     private DatabaseManager database;
-    private BukkitTask updateTask;
+    private final Map<UUID, BukkitTask> updateTasks = new HashMap<>();
 
     private Cursor cursor;
     private Granny granny;
@@ -128,16 +131,31 @@ public class UpgradesManager {
         upgrades.put("you", you);
     }
 
-    public void start(Player p) {
-        stop();
+public void start(Player player) {
+    stop(player);
 
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update(p);
+    BukkitTask task = new BukkitRunnable() {
+        @Override
+        public void run() {
+            if (!player.isOnline()) {
+                stop(player);
+                return;
             }
-        }.runTaskTimer(plugin, 0, 20);
+
+            update(player);
+        }
+    }.runTaskTimer(plugin, 0L, 20L);
+
+    updateTasks.put(player.getUniqueId(), task);
+}
+
+public void stop(Player player) {
+    BukkitTask task = updateTasks.remove(player.getUniqueId());
+
+    if (task != null) {
+        task.cancel();
     }
+}
 
     public void update(Player p) {
         for (Upgrade upgrade : upgrades.values()) {
@@ -156,12 +174,6 @@ public class UpgradesManager {
                     p.getInventory().setItem(slot, null);
                 }
             }
-        }
-    }
-
-    public void stop() {
-        if (updateTask != null) {
-            updateTask.cancel();
         }
     }
 
