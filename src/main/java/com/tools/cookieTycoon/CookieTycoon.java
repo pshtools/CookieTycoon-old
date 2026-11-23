@@ -71,6 +71,12 @@ public final class CookieTycoon extends JavaPlugin {
 
     @Override
     public void onDisable() {
+
+        if (timeTracker != null) {
+            timeTracker.stop();
+            timeTracker.saveData();
+        }
+
         if (database != null) {
             database.close();
         }
