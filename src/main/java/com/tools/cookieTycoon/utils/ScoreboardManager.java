@@ -21,29 +21,39 @@ import java.util.Objects;
 
 public class ScoreboardManager {
     private CookieTycoon plugin;
-    private BukkitTask updateTask;
+    private final Map<UUID, BukkitTask> updateTasks = new HashMap<>();
 
     public ScoreboardManager (CookieTycoon plugin) {
         this.plugin = plugin;
     }
 
-    public void start(Player p) {
-        stop(p);
+public void start(Player player) {
+    stop(player);
 
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update(p);
+    BukkitTask task = new BukkitRunnable() {
+        @Override
+        public void run() {
+            if (!player.isOnline()) {
+                stop(player);
+                return;
             }
-        }.runTaskTimer(plugin, 0, 5);
+
+            update(player);
+        }
+    }.runTaskTimer(plugin, 0L, 20L);
+
+    updateTasks.put(player.getUniqueId(), task);
+}
+
+public void stop(Player player) {
+    BukkitTask task = updateTasks.remove(player.getUniqueId());
+
+    if (task != null) {
+        task.cancel();
     }
 
-    public void stop(Player p) {
-        if (updateTask != null) {
-            updateTask.cancel();
-            clear(p);
-        }
-    }
+    clear(player);
+}
 
     public void update(Player player) {
 
