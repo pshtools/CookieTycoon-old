@@ -31,11 +31,27 @@ public class GUIListener implements Listener {
     @EventHandler
     public void click(InventoryClickEvent e) {
 
-        e.setCancelled(true);
+    String title = e.getView().getTitle();
 
-        if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) {
-            return;
-        }
+    boolean isPluginInventory =
+            title.equals("Улучшения") ||
+            title.equals("Ачивменты") ||
+            title.equals(ChatColor.DARK_GRAY + "§lПерерождение");
+
+    if (!isPluginInventory) {
+        return;
+    }
+
+    e.setCancelled(true);
+
+    if (!(e.getWhoClicked() instanceof Player)) {
+        return;
+    }
+
+    if (e.getCurrentItem() == null ||
+            e.getCurrentItem().getType() == Material.AIR) {
+        return;
+    }
 
         String name = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
         Player p = (Player) e.getWhoClicked();
