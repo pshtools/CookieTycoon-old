@@ -29,7 +29,13 @@ public class JoinListener implements Listener {
     @EventHandler
     public void quit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
+
+        plugin.getActionBar().stop(p);
+        plugin.getScoreboard().stop(p);
+        plugin.getUpgradesManager().stop(p);
+
         plugin.getTimeTracker().onPlayerLogout(p);
+
         e.setQuitMessage(null);
     }
 }
