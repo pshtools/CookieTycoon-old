@@ -43,17 +43,16 @@ public class TimeTracker {
         loadData();
     }
 
-    public void start() {
-        stop();
+public void start() {
+    stop();
 
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                saveData();
-                loadData();
-            }
-        }.runTaskTimer(plugin, 0, 100); // сохранение каждые 5 сек
-    }
+    updateTask = new BukkitRunnable() {
+        @Override
+        public void run() {
+            saveData();
+        }
+    }.runTaskTimer(plugin, 1200L, 1200L);
+}
 
     public void stop() {
         if (updateTask != null) {
